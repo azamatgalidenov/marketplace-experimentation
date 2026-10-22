@@ -1,0 +1,73 @@
+/// REAL Olist data. One row per payment record; an order can combine methods. Includes payments on orders without items.
+table Payments
+	lineageTag: 93bb9851-3ffa-4ce8-afb1-5a1f51fc9228
+
+	/// Sum of payment records, all order statuses (includes payments on orders without items).
+	measure 'Payment Value' = SUM ( 'Payments'[Payment Amount] )
+		formatString: R$ #,##0
+		displayFolder: Value
+		lineageTag: 8da86fce-49b9-4835-9c83-f3dc9c998b5c
+
+	/// Payment value of the current method / payment value across all methods.
+	measure 'Payment Value Share' = DIVIDE ( [Payment Value], CALCULATE ( [Payment Value], REMOVEFILTERS ( 'Payments'[Payment Type] ) ) )
+		formatString: 0.0%
+		displayFolder: Value
+		lineageTag: 62adcc81-02c3-4879-83b9-a5b397d3b0e7
+
+	/// credit_card, boleto, voucher, debit_card, not_defined.
+	column 'Payment Type'
+		dataType: string
+		lineageTag: 9823385e-b054-47b8-97cc-14f1b03b4335
+		sourceColumn: payment_type
+
+	/// Number of instalments of the payment record.
+	column 'Payment Installments'
+		dataType: int64
+		lineageTag: a78cc870-17df-4e9c-a8d2-a4c4b1b2b8d4
+		summarizeBy: none
+		sourceColumn: payment_installments
+
+	/// Amount paid by this record, BRL.
+	column 'Payment Amount'
+		dataType: decimal
+		isHidden
+		lineageTag: 036a3c58-4ada-4afe-abf9-610a9e77ccd8
+		summarizeBy: none
+		sourceColumn: payment_value
+
+	/// Status of the parent order.
+	column 'Order Status'
+		dataType: string
+		lineageTag: bff44f62-17f4-43e9-973e-9ab0bff53702
+		sourceColumn: order_status
+
+	/// Purchase date of the parent order; foreign key to Date.
+	column 'Order Date'
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: 28007183-5562-46e1-aa43-9b8d5a98d777
+		summarizeBy: none
+		sourceColumn: purchase_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Foreign key to Customer Region.
+	column 'Customer Region'
+		dataType: string
+		isHidden
+		lineageTag: 3281f378-3e7f-42c0-9e76-f8bf41bd3509
+		sourceColumn: customer_region
+
+	partition Payments = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\hist_fct_order_payments.parquet")),
+				    Selected = Table.SelectColumns(Source, {"payment_type", "payment_installments", "payment_value", "order_status", "purchase_date", "customer_region"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"payment_type", type text}, {"payment_installments", Int64.Type}, {"payment_value", Currency.Type}, {"order_status", type text}, {"purchase_date", type date}, {"customer_region", type text}})
+				in
+				    Typed
+

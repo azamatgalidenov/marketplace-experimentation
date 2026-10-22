@@ -1,0 +1,11 @@
+{
+  "decisions": {
+    "aa": "A/A PASS",
+    "null_effect": "CONTINUE TESTING",
+    "positive": "LAUNCH",
+    "small_effect": "CONTINUE TESTING",
+    "guardrail_harm": "REJECT"
+  },
+  "planned_n_per_arm": 10500.0,
+  "achieved_mde_abs": 0.019193680888278972
+}

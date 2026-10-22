@@ -1,0 +1,137 @@
+/// SIMULATED. One row per assigned synthetic user per scenario (the analysis dataset). Not real users.
+table 'SIM Experiment Users'
+	lineageTag: 8b7cf582-4331-420a-9a46-ef49080ec8d5
+
+	/// SIMULATED. Assigned users (denominator of every per-user metric).
+	measure 'SIM Assigned Users' = COUNTROWS ( 'SIM Experiment Users' )
+		formatString: #,##0
+		displayFolder: SIMULATED Sample
+		lineageTag: 2dc7039e-b574-424b-b7f7-58cc7259ee43
+
+	/// SIMULATED. Users assigned to control.
+	measure 'SIM Control Users' = CALCULATE ( [SIM Assigned Users], 'SIM Experiment Users'[Variant] = "control" )
+		formatString: #,##0
+		displayFolder: SIMULATED Sample
+		lineageTag: d1e70524-c0fc-42f6-8501-3d14f0abc90e
+
+	/// SIMULATED. Users assigned to treatment.
+	measure 'SIM Treatment Users' = CALCULATE ( [SIM Assigned Users], 'SIM Experiment Users'[Variant] = "treatment" )
+		formatString: #,##0
+		displayFolder: SIMULATED Sample
+		lineageTag: 3de7771b-b376-485f-84e3-048f7abb3433
+
+	/// SIMULATED. Share of assigned users in treatment (planned 50%).
+	measure 'SIM Observed Treatment Share' = DIVIDE ( [SIM Treatment Users], [SIM Assigned Users] )
+		formatString: 0.00%
+		displayFolder: SIMULATED Diagnostics
+		lineageTag: ea85f240-6b14-4798-8ecc-c0416f0e3b98
+
+	/// SIMULATED. Assigned users who completed a purchase within 7 days.
+	measure 'SIM Purchasers' = CALCULATE ( [SIM Assigned Users], KEEPFILTERS ( 'SIM Experiment Users'[Purchased] = TRUE () ) )
+		formatString: #,##0
+		displayFolder: SIMULATED Primary
+		lineageTag: 1ae36b9f-f32d-4f87-a541-413ad772102d
+
+	/// SIMULATED primary metric: purchasers / assigned users, computed from user rows.
+	measure 'SIM Completion Rate' = DIVIDE ( [SIM Purchasers], [SIM Assigned Users] )
+		formatString: 0.00%
+		displayFolder: SIMULATED Primary
+		lineageTag: 333856c9-847e-4387-8ae7-a6fd24e5ce4d
+
+	/// SIMULATED. Purchase completion in control.
+	measure 'SIM Completion Control' = CALCULATE ( [SIM Completion Rate], 'SIM Experiment Users'[Variant] = "control" )
+		formatString: 0.00%
+		displayFolder: SIMULATED Primary
+		lineageTag: 06a8c71a-1fb1-4b71-aadf-611b7b1f6c1c
+
+	/// SIMULATED. Purchase completion in treatment.
+	measure 'SIM Completion Treatment' = CALCULATE ( [SIM Completion Rate], 'SIM Experiment Users'[Variant] = "treatment" )
+		formatString: 0.00%
+		displayFolder: SIMULATED Primary
+		lineageTag: ed6c9bbb-896b-4276-96e2-778d4cc09195
+
+	/// SIMULATED. Treatment minus control completion, percentage points (requires one scenario).
+	measure 'SIM Absolute Lift (pp)' = IF ( HASONEVALUE ( 'SIM Scenario'[Scenario] ), ( [SIM Completion Treatment] - [SIM Completion Control] ) * 100 )
+		formatString: +0.00 pp;-0.00 pp
+		displayFolder: SIMULATED Primary
+		lineageTag: 283482cd-e213-447e-a90a-e9d60d102e63
+
+	/// SIMULATED. Relative change in completion: (treatment - control) / control.
+	measure 'SIM Relative Lift' = IF ( HASONEVALUE ( 'SIM Scenario'[Scenario] ), DIVIDE ( [SIM Completion Treatment] - [SIM Completion Control], [SIM Completion Control] ) )
+		formatString: +0.0%;-0.0%
+		displayFolder: SIMULATED Primary
+		lineageTag: df984f33-5827-4430-9f62-0db6bad29aeb
+
+	/// Foreign key to SIM Scenario.
+	column Scenario
+		dataType: string
+		isHidden
+		lineageTag: 18433ca0-33bb-4ea8-98a5-d968fe61dfaf
+		sourceColumn: scenario
+
+	/// control or treatment (stable hash assignment).
+	column Variant
+		dataType: string
+		lineageTag: afdc73d0-894c-4105-8b3a-86966c9af091
+		sourceColumn: variant
+
+	/// Date of the user's first checkout exposure (synthetic calendar).
+	column 'Exposure Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 605f2bdb-c775-4e3e-b346-25be6eb8060e
+		summarizeBy: none
+		sourceColumn: exposure_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Pre-treatment attribute: mobile_app, mobile_web, desktop.
+	column Device
+		dataType: string
+		lineageTag: 65be28a0-8904-4611-89c9-64228ac304af
+		sourceColumn: device
+
+	/// Pre-treatment attribute: new or returning.
+	column 'Customer Type'
+		dataType: string
+		lineageTag: f392aa6a-0a5a-4b1d-93a4-0dd01e97c34c
+		sourceColumn: customer_type
+
+	/// Primary outcome: purchase within 7 days of first exposure.
+	column Purchased
+		dataType: boolean
+		lineageTag: a3018f88-520f-4bcb-bfcf-de2f13972160
+		sourceColumn: purchased
+
+	/// Guardrail outcome: at least one checkout error.
+	column 'Checkout Error'
+		dataType: boolean
+		lineageTag: 038a909f-1add-43e5-ad58-2f576223a996
+		sourceColumn: checkout_error
+
+	/// Guardrail outcome: purchased and then cancelled.
+	column 'Cancelled Order'
+		dataType: boolean
+		lineageTag: 3d120c67-80c6-414e-9d15-b60d94d56e5b
+		sourceColumn: cancelled_order
+
+	/// Value of a non-cancelled purchase, 0 otherwise (synthetic units).
+	column 'Net Order Value'
+		dataType: decimal
+		isHidden
+		lineageTag: eda45979-0626-41d7-b0b3-3a2bb6714a2a
+		summarizeBy: none
+		sourceColumn: net_order_value
+
+	partition 'SIM Experiment Users' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\sim_fct_experiment_users.parquet")),
+				    Selected = Table.SelectColumns(Source, {"scenario", "variant", "exposure_date", "device", "customer_type", "purchased", "checkout_error", "cancelled_order", "net_order_value"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"scenario", type text}, {"variant", type text}, {"exposure_date", type date}, {"device", type text}, {"customer_type", type text}, {"purchased", type logical}, {"checkout_error", type logical}, {"cancelled_order", type logical}, {"net_order_value", Currency.Type}})
+				in
+				    Typed
+

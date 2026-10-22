@@ -1,0 +1,50 @@
+term,vif
+"late:C(timing, Treatment('post'))[T.pre]",26.058871981044245
+"C(timing, Treatment('post'))[T.pre]",21.71374294239357
+late,5.788730293340984
+freight_share_10pp,3.704241170771862
+log_items_value,3.603778193056058
+"C(category, Treatment('bed_bath_table'))[T.other]",2.4995216182165465
+"C(month, Treatment('2017-11'))[T.2018-01]",1.86384956092618
+"C(month, Treatment('2017-11'))[T.2018-08]",1.8451675484504464
+"C(month, Treatment('2017-11'))[T.2018-03]",1.8349319623338207
+"C(month, Treatment('2017-11'))[T.2018-04]",1.8137800596594988
+"C(month, Treatment('2017-11'))[T.2018-05]",1.8065128795014787
+"C(month, Treatment('2017-11'))[T.2018-02]",1.7888258859538109
+"C(category, Treatment('bed_bath_table'))[T.health_beauty]",1.786916008120042
+"late:C(timing, Treatment('post'))[T.same_day]",1.7807472161461968
+"C(month, Treatment('2017-11'))[T.2018-06]",1.7794513859702246
+"C(month, Treatment('2017-11'))[T.2018-07]",1.7680098256336938
+promised_weeks,1.6975203016804188
+"C(month, Treatment('2017-11'))[T.2017-12]",1.6953992730094267
+"C(category, Treatment('bed_bath_table'))[T.sports_leisure]",1.6857136162009472
+"C(category, Treatment('bed_bath_table'))[T.computers_accessories]",1.6067977387334782
+"C(category, Treatment('bed_bath_table'))[T.furniture_decor]",1.577315803406895
+"C(category, Treatment('bed_bath_table'))[T.watches_gifts]",1.5473651894876512
+"C(month, Treatment('2017-11'))[T.2017-10]",1.5464596340961623
+"C(category, Treatment('bed_bath_table'))[T.housewares]",1.5432644399254016
+"C(month, Treatment('2017-11'))[T.2017-08]",1.5166720786937498
+"C(month, Treatment('2017-11'))[T.2017-09]",1.508668735985121
+"C(month, Treatment('2017-11'))[T.2017-07]",1.477862032725305
+"C(month, Treatment('2017-11'))[T.2017-05]",1.4416984345425135
+"C(category, Treatment('bed_bath_table'))[T.telephony]",1.431496039303211
+"C(month, Treatment('2017-11'))[T.2017-06]",1.3926169270029156
+"C(category, Treatment('bed_bath_table'))[T.auto]",1.3730943865657839
+"C(category, Treatment('bed_bath_table'))[T.toys]",1.3691184363361761
+"C(category, Treatment('bed_bath_table'))[T.cool_stuff]",1.3546441372150795
+"C(category, Treatment('bed_bath_table'))[T.garden_tools]",1.3340005409173792
+"C(month, Treatment('2017-11'))[T.2017-03]",1.3210957797069576
+"C(category, Treatment('bed_bath_table'))[T.electronics]",1.301993054708488
+"C(category, Treatment('bed_bath_table'))[T.perfumery]",1.2983557669406234
+"C(month, Treatment('2017-11'))[T.2017-04]",1.2982614290356729
+"C(category, Treatment('bed_bath_table'))[T.baby]",1.2699602162742032
+"C(region, Treatment('Southeast'))[T.Northeast]",1.2663602243266172
+"C(timing, Treatment('post'))[T.same_day]",1.2428165724377624
+"C(month, Treatment('2017-11'))[T.2017-02]",1.241899949332634
+"C(basket, Treatment('single_item'))[T.multi_item_one_seller]",1.1972147980869543
+"C(month, Treatment('2017-11'))[T.2017-01]",1.1454112549776143
+"C(category, Treatment('bed_bath_table'))[T.unknown]",1.137887259691491
+"C(region, Treatment('Southeast'))[T.North]",1.1222396323686097
+"C(region, Treatment('Southeast'))[T.South]",1.1027049891868026
+"C(region, Treatment('Southeast'))[T.Center-West]",1.0616827828694242
+"C(basket, Treatment('single_item'))[T.multi_seller]",1.0375749154464682

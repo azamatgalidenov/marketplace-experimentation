@@ -1,0 +1,22 @@
+{
+  "orders_in_window": 99092,
+  "delivered_orders_in_window": 96211,
+  "delivered_gmv": 13181027.13,
+  "delivered_gross_value": 15373120.01,
+  "payment_value_all_statuses_window": 15944480.57,
+  "aov_gross_delivered": 159.78547161966927,
+  "median_gross_delivered": 105.28,
+  "late_rate_headline": 0.06788769580990198,
+  "late_rate_timestamp_definition": 0.08130723574108915,
+  "measurable_deliveries_window": 96203,
+  "low_review_rate_late": 0.6241768579492004,
+  "low_review_rate_on_time": 0.0924738175865085,
+  "survey_before_delivery_orders": 4976,
+  "survey_before_delivery_low_rate": 0.7260852090032154,
+  "survey_before_delivery_late_share": 0.9547829581993569,
+  "payment_orders_exact": 98089,
+  "payment_orders_1_cent": 273,
+  "payment_orders_over": 264,
+  "payment_orders_under": 39,
+  "payment_value_orders_without_items_all_time": 162591.95
+}

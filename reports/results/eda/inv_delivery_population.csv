@@ -1,0 +1,7 @@
+step,population,orders,late_rate_date_level,late_rate_timestamp_level
+1,All orders,99441,,
+2,Status delivered,96478,,
+3,Delivered with customer-delivery timestamp (measurable),96470,0.06773090079817559,0.08112366538820359
+4,"Measurable, in analysis window (headline)",96203,0.06788769580990198,0.08130723574108915
+5,Not delivered but has delivery timestamp (excluded),6,0.16666666666666666,
+6,Delivered without delivery timestamp (excluded),8,,

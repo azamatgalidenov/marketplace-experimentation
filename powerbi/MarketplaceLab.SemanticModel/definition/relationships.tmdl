@@ -1,0 +1,52 @@
+relationship 'Orders_Order Date_Date_Date'
+	fromColumn: Orders.'Order Date'
+	toColumn: Date.Date
+
+relationship 'Order Items_Order Date_Date_Date'
+	fromColumn: 'Order Items'.'Order Date'
+	toColumn: Date.Date
+
+relationship 'Payments_Order Date_Date_Date'
+	fromColumn: Payments.'Order Date'
+	toColumn: Date.Date
+
+relationship 'Orders_Customer Region_Customer Region_Region'
+	fromColumn: Orders.'Customer Region'
+	toColumn: 'Customer Region'.Region
+
+relationship 'Order Items_Customer Region_Customer Region_Region'
+	fromColumn: 'Order Items'.'Customer Region'
+	toColumn: 'Customer Region'.Region
+
+relationship 'Payments_Customer Region_Customer Region_Region'
+	fromColumn: Payments.'Customer Region'
+	toColumn: 'Customer Region'.Region
+
+relationship 'Orders_Primary Category_Product Category_Category'
+	fromColumn: Orders.'Primary Category'
+	toColumn: 'Product Category'.Category
+
+relationship 'Order Items_Category_Product Category_Category'
+	fromColumn: 'Order Items'.Category
+	toColumn: 'Product Category'.Category
+
+relationship 'SIM Experiment Users_Scenario_SIM Scenario_Scenario'
+	fromColumn: 'SIM Experiment Users'.Scenario
+	toColumn: 'SIM Scenario'.Scenario
+
+relationship 'SIM Metric Results_Scenario_SIM Scenario_Scenario'
+	fromColumn: 'SIM Metric Results'.Scenario
+	toColumn: 'SIM Scenario'.Scenario
+
+relationship 'SIM Segment Results_Scenario_SIM Scenario_Scenario'
+	fromColumn: 'SIM Segment Results'.Scenario
+	toColumn: 'SIM Scenario'.Scenario
+
+relationship 'SIM Daily Assignments_Scenario_SIM Scenario_Scenario'
+	fromColumn: 'SIM Daily Assignments'.Scenario
+	toColumn: 'SIM Scenario'.Scenario
+
+relationship 'SIM Variant Metrics_Scenario_SIM Scenario_Scenario'
+	fromColumn: 'SIM Variant Metrics'.Scenario
+	toColumn: 'SIM Scenario'.Scenario
+

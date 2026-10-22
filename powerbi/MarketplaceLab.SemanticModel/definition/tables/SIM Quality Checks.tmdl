@@ -1,0 +1,46 @@
+/// SIMULATED pipeline data-quality check results (computed at export). Utility table without relationships.
+table 'SIM Quality Checks'
+	lineageTag: 3ae90ab1-ebec-4f6f-b09a-30a936933f16
+
+	/// SIMULATED. Number of data-quality checks passed at export time.
+	measure 'SIM Quality Checks Passed' =
+			VAR _passed = CALCULATE ( COUNTROWS ( 'SIM Quality Checks' ), 'SIM Quality Checks'[Passed] = TRUE () )
+			VAR _total = COUNTROWS ( 'SIM Quality Checks' )
+			RETURN FORMAT ( _passed, "0" ) & " of " & FORMAT ( _total, "0" ) & " passed"
+		displayFolder: SIMULATED Diagnostics
+		lineageTag: 75c92b3c-cba7-4fd4-bce4-4b0ed166f529
+
+	/// SQL quality check file name.
+	column 'Check Name'
+		dataType: string
+		lineageTag: 86b7ee07-2a48-4883-903c-da21e2a56e98
+		sourceColumn: check_name
+
+	/// error or warn.
+	column Severity
+		dataType: string
+		lineageTag: 176e6b99-b33f-46cb-9828-8b348b8089b0
+		sourceColumn: severity
+
+	/// Rows violating the rule (0 = pass).
+	column 'Failing Rows'
+		dataType: int64
+		lineageTag: a3f22e1c-1dae-42dd-8782-b28fb7b57d35
+		summarizeBy: none
+		sourceColumn: failing_rows
+
+	/// TRUE when the check returned no failing rows.
+	column Passed
+		dataType: boolean
+		lineageTag: 004999d5-8f35-4d2c-99c1-87bd3779da64
+		sourceColumn: passed
+
+	partition 'SIM Quality Checks' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\sim_quality_checks.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"check_name", type text}, {"severity", type text}, {"failing_rows", Int64.Type}, {"passed", type logical}})
+				in
+				    Typed
+

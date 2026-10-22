@@ -1,0 +1,6 @@
+scenario,description,decision,reasons
+aa,A/A test - both arms receive the existing checkout,A/A PASS,"Primary difference -1.16 pp, p=0.092; an A/A test is expected to be non-significant 95% of the time."
+null_effect,Simplified checkout is faster but does not change purchase completion,CONTINUE TESTING,"Inconclusive: -0.24 pp (95% CI -1.59 to +1.11) is consistent with no effect and with a worthwhile lift (>= 1.0 pp). Not evidence of no effect. Next step: a new, pre-registered test sized for the smallest lift still worth launching - not an extension of this one. Guardrails not cleared: net_order_value_per_user, checkout_error_rate, cancellation_rate."
+positive,Simplified checkout raises completion by 2.5 pp and reduces errors,LAUNCH,Primary improved: +2.07 pp (95% CI +0.73 to +3.41); estimate >= 1.0 pp. All guardrails within margins.
+small_effect,"Real but small 0.8 pp lift, below the planned MDE",CONTINUE TESTING,Primary improved: +1.46 pp (95% CI +0.11 to +2.80). Guardrail not cleared (cannot rule out harm beyond margin): checkout_error_rate.
+guardrail_harm,"3 pp more purchases, but more cancellations and slightly smaller baskets",REJECT,Guardrail breached: cancellation_rate. Primary +2.55 pp (95% CI +1.21 to +3.89).

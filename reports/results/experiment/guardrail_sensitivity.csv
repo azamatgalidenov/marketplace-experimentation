@@ -1,0 +1,4 @@
+metric,control_mean,control_sd,margin,margin_scale,margin_abs,planned_n_per_arm,expected_ci_half_width_abs,can_show_noninferiority_at_zero_effect,n_per_arm_for_80pct_noninferiority
+net_order_value_per_user,87.03132179535945,157.0363267275762,0.02,relative,1.740626435907189,10500.0,4.247844080534962,False,127770
+checkout_error_rate,0.05620007607455306,0.23031863125046545,0.005,absolute,0.005,10500.0,0.0062301357576418715,False,33309
+cancellation_rate,0.017592240395587676,0.13147013768127014,0.005,absolute,0.005,10500.0,0.0035562768039353997,True,10854

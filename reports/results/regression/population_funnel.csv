@@ -1,0 +1,5 @@
+step,remaining,removed
+Orders purchased in analysis window,99092,0
+Delivered with a customer-delivery timestamp,96203,2889
+Has a review (latest review per order),95560,643
+Survey sent and answered on/after purchase (drops source inconsistencies),95557,3

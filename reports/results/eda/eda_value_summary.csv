@@ -1,0 +1,2 @@
+orders,delivered_orders,delivered_gmv,delivered_freight,delivered_gross_value,payment_value_all_statuses,payment_value_orders_without_items,aov_gross_delivered,median_gross_delivered,p90_gross_delivered,mean_freight_share
+99092,96211,13181027.13,2192092.88,15373120.01,15944480.57,155482.66,159.78547161966927,105.28,305.69,0.20897337431616744

@@ -1,0 +1,69 @@
+/// REAL Olist data. One row per order line (unit). Used for category merchandise value.
+table 'Order Items'
+	lineageTag: 6f553e90-faa4-4b63-9050-5f10d6e0081f
+
+	/// Sum of item prices of delivered orders at line level (each line once), used for category value.
+	measure 'Item GMV (Delivered)' = CALCULATE ( SUM ( 'Order Items'[Item Price] ), KEEPFILTERS ( 'Order Items'[Order Status] = "delivered" ) )
+		formatString: R$ #,##0
+		displayFolder: Value
+		lineageTag: 3e62109d-8dd6-44bf-8a9d-2a5286192c25
+
+	/// Foreign key to Product Category.
+	column Category
+		dataType: string
+		isHidden
+		lineageTag: 61632f9b-69fc-4c12-a0ef-65a9e43569f2
+		sourceColumn: category_name
+
+	/// Status of the parent order.
+	column 'Order Status'
+		dataType: string
+		lineageTag: 3c6eb52d-34d4-4045-80ad-38f817ecfa4e
+		sourceColumn: order_status
+
+	/// Purchase date of the parent order; foreign key to Date.
+	column 'Order Date'
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: 4c5d373b-42a7-403d-ad84-d0fc441e4fd7
+		summarizeBy: none
+		sourceColumn: purchase_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Foreign key to Customer Region.
+	column 'Customer Region'
+		dataType: string
+		isHidden
+		lineageTag: a4d6c3d1-4020-4e79-8c11-ac6df738ee1b
+		sourceColumn: customer_region
+
+	/// Price of the unit, BRL.
+	column 'Item Price'
+		dataType: decimal
+		isHidden
+		lineageTag: 7dd93ae8-0bb1-4b63-8b01-8a9a8fd2d61f
+		summarizeBy: none
+		sourceColumn: item_price
+
+	/// Freight allocated to the line, BRL.
+	column 'Freight Value'
+		dataType: decimal
+		isHidden
+		lineageTag: c71fe7b4-21ff-4974-ab24-3541ab9f382b
+		summarizeBy: none
+		sourceColumn: freight_value
+
+	partition 'Order Items' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\hist_fct_order_items.parquet")),
+				    Selected = Table.SelectColumns(Source, {"category_name", "order_status", "purchase_date", "customer_region", "item_price", "freight_value"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"category_name", type text}, {"order_status", type text}, {"purchase_date", type date}, {"customer_region", type text}, {"item_price", Currency.Type}, {"freight_value", Currency.Type}})
+				in
+				    Typed
+

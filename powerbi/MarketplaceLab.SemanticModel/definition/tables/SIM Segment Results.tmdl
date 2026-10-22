@@ -1,0 +1,96 @@
+/// SIMULATED. Primary metric within pre-registered segments (exploratory, Benjamini-Hochberg adjusted). Never a basis for segment-only launch.
+table 'SIM Segment Results'
+	lineageTag: 8cc80095-bd32-4551-93c8-0bfb73f11781
+
+	/// SIMULATED. Completion difference within a pre-registered segment, percentage points (exploratory).
+	measure 'SIM Segment Lift (pp)' = IF ( HASONEVALUE ( 'SIM Scenario'[Scenario] ), SUM ( 'SIM Segment Results'[Absolute Difference] ) * 100 )
+		formatString: +0.00 pp;-0.00 pp
+		displayFolder: SIMULATED Diagnostics
+		lineageTag: cbcfa525-e920-4563-8162-99d9358b8a00
+
+	/// Foreign key to SIM Scenario.
+	column Scenario
+		dataType: string
+		isHidden
+		lineageTag: 8747d7be-829b-43f7-b44c-b2e64f6c514f
+		sourceColumn: scenario
+
+	/// Segment and level, e.g. 'device: desktop'.
+	column Segment
+		dataType: string
+		lineageTag: 67580450-1e17-4da3-88fc-e7b097d51bda
+		sourceColumn: segment_label
+		sortByColumn: 'Segment Order'
+
+	/// Sort key for Segment.
+	column 'Segment Order'
+		dataType: int64
+		isHidden
+		lineageTag: 051c8b50-151d-4d96-83f6-0beb2e242b7d
+		summarizeBy: none
+		sourceColumn: segment_order
+
+	/// Treatment users in the segment.
+	column 'Treatment Users'
+		dataType: int64
+		formatString: #,##0
+		lineageTag: d7fdc934-0e54-4cba-b916-bdc30344dbc9
+		summarizeBy: none
+		sourceColumn: n_treatment
+
+	/// Control users in the segment.
+	column 'Control Users'
+		dataType: int64
+		formatString: #,##0
+		lineageTag: 2abf791d-8e9a-471a-a7c3-1777cc6a9411
+		summarizeBy: none
+		sourceColumn: n_control
+
+	/// Completion difference in the segment (proportion points).
+	column 'Absolute Difference'
+		dataType: double
+		isHidden
+		lineageTag: ca90ac5a-6b60-4c65-b6e9-4d7830ccfa39
+		summarizeBy: none
+		sourceColumn: abs_diff
+
+	/// Lower 95% bound (unadjusted).
+	column 'CI Low'
+		dataType: double
+		formatString: +0.0000;-0.0000
+		lineageTag: 88c84e21-a8b8-4b19-a4a7-18d03a3569bf
+		summarizeBy: none
+		sourceColumn: abs_ci_low
+
+	/// Upper 95% bound (unadjusted).
+	column 'CI High'
+		dataType: double
+		formatString: +0.0000;-0.0000
+		lineageTag: 6cfce162-0df8-4f43-be0a-12eaa73016e3
+		summarizeBy: none
+		sourceColumn: abs_ci_high
+
+	/// Benjamini-Hochberg adjusted p-value across all segment tests of the scenario.
+	column 'BH Adjusted p-value'
+		dataType: double
+		formatString: 0.0000
+		lineageTag: 424096c7-fb6b-43fc-bf91-4bb5cc057491
+		summarizeBy: none
+		sourceColumn: p_value_bh
+
+	/// TRUE when either arm has fewer than 1,000 users in the segment.
+	column 'Small Sample'
+		dataType: boolean
+		lineageTag: ac0c83fc-9ae2-4684-8fc7-b634e24f8fa9
+		sourceColumn: small_sample
+
+	partition 'SIM Segment Results' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\sim_segment_results.parquet")),
+				    Selected = Table.SelectColumns(Source, {"scenario", "segment_label", "segment_order", "n_treatment", "n_control", "abs_diff", "abs_ci_low", "abs_ci_high", "p_value_bh", "small_sample"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"scenario", type text}, {"segment_label", type text}, {"segment_order", Int64.Type}, {"n_treatment", Int64.Type}, {"n_control", Int64.Type}, {"abs_diff", type number}, {"abs_ci_low", type number}, {"abs_ci_high", type number}, {"p_value_bh", type number}, {"small_sample", type logical}})
+				in
+				    Typed
+

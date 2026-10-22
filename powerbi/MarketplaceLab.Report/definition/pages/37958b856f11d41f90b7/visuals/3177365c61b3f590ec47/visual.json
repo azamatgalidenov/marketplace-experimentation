@@ -1,0 +1,327 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "3177365c61b3f590ec47",
+  "position": {
+    "x": 32,
+    "y": 728,
+    "width": 1856,
+    "height": 320,
+    "z": 7000,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SIM Metric Results"
+                    }
+                  },
+                  "Property": "Metric"
+                }
+              },
+              "queryRef": "SIM Metric Results.Metric",
+              "nativeQueryRef": "Metric"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SIM Metric Results"
+                    }
+                  },
+                  "Property": "Role"
+                }
+              },
+              "queryRef": "SIM Metric Results.Role",
+              "nativeQueryRef": "Role"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SIM Metric Results"
+                    }
+                  },
+                  "Property": "Guardrail Status"
+                }
+              },
+              "queryRef": "SIM Metric Results.Guardrail Status",
+              "nativeQueryRef": "Guardrail Status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SIM Metric Results"
+                    }
+                  },
+                  "Property": "Control Value"
+                }
+              },
+              "queryRef": "SIM Metric Results.Control Value",
+              "nativeQueryRef": "Control Value"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SIM Metric Results"
+                    }
+                  },
+                  "Property": "Treatment Value"
+                }
+              },
+              "queryRef": "SIM Metric Results.Treatment Value",
+              "nativeQueryRef": "Treatment Value"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SIM Metric Results"
+                    }
+                  },
+                  "Property": "Absolute Difference"
+                }
+              },
+              "queryRef": "SIM Metric Results.Absolute Difference",
+              "nativeQueryRef": "Absolute Difference"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SIM Metric Results"
+                    }
+                  },
+                  "Property": "CI Low"
+                }
+              },
+              "queryRef": "SIM Metric Results.CI Low",
+              "nativeQueryRef": "CI Low"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SIM Metric Results"
+                    }
+                  },
+                  "Property": "CI High"
+                }
+              },
+              "queryRef": "SIM Metric Results.CI High",
+              "nativeQueryRef": "CI High"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SIM Metric Results"
+                    }
+                  },
+                  "Property": "Relative Difference"
+                }
+              },
+              "queryRef": "SIM Metric Results.Relative Difference",
+              "nativeQueryRef": "Relative Difference"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SIM Metric Results"
+                    }
+                  },
+                  "Property": "p-value"
+                }
+              },
+              "queryRef": "SIM Metric Results.p-value",
+              "nativeQueryRef": "p-value"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "SIM Metric Results"
+                  }
+                },
+                "Property": "Metric"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": false
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Table of simulated primary, guardrail and secondary metrics with control and treatment values, difference, confidence interval, p-value and guardrail status.'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'SIMULATED primary metric and guardrails vs pre-registered margins (rates as proportions; 95% CI)'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#0B0B0B'"
+                    }
+                  }
+                }
+              }
+            },
+            "titleWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

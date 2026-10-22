@@ -1,0 +1,204 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 2124.0680107505032,
+            "y": 392.64280829272775
+          },
+          "nodeIndex": "SIM Power Plan",
+          "nodeLineageTag": "6a50dc6a-9eee-4dbf-9dcd-a14533447ac8",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 351.23743367946417,
+            "y": 592.6940133539016
+          },
+          "nodeIndex": "Customer Region",
+          "nodeLineageTag": "d1470750-c899-4d53-bfe1-ea1ab925efb1",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 337.0173668977327,
+            "y": 262.74219926975252
+          },
+          "nodeIndex": "Date",
+          "nodeLineageTag": "2e7c178c-d327-4f3d-9151-20741ff76d80",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 638.26057898764134,
+            "y": 483.35102811606657
+          },
+          "nodeIndex": "Order Items",
+          "nodeLineageTag": "6f553e90-faa4-4b63-9050-5f10d6e0081f",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 623.715306286754,
+            "y": 129.93458846938893
+          },
+          "nodeIndex": "Orders",
+          "nodeLineageTag": "c07701ca-8746-4b41-9f70-be6b9b24ddbd",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 409.64094408613465
+          },
+          "nodeIndex": "Payments",
+          "nodeLineageTag": "93bb9851-3ffa-4ce8-afb1-5a1f51fc9228",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 925.28904779087111,
+            "y": 404.65782712582478
+          },
+          "nodeIndex": "Product Category",
+          "nodeLineageTag": "adb527ca-867b-49e8-a9ac-60c3f4174a9b",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1209.2890477908711,
+            "y": 579.13733872652642
+          },
+          "nodeIndex": "SIM Daily Assignments",
+          "nodeLineageTag": "08a6329b-8fa1-4957-bbc9-09486fcda50b",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1694.3015611128535,
+            "y": 611.2856165854555
+          },
+          "nodeIndex": "SIM Experiment Users",
+          "nodeLineageTag": "8b7cf582-4331-420a-9a46-ef49080ec8d5",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1212.4686610224253,
+            "y": 29.642553172620183
+          },
+          "nodeIndex": "SIM Metric Results",
+          "nodeLineageTag": "f203ddb3-c578-4e60-a6df-ea7f74db9f51",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2408.0680107505032,
+            "y": 380.64280829272775
+          },
+          "nodeIndex": "SIM Quality Checks",
+          "nodeLineageTag": "3ae90ab1-ebec-4f6f-b09a-30a936933f16",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1499.1763236462043,
+            "y": 254.04997910740298
+          },
+          "nodeIndex": "SIM Scenario",
+          "nodeLineageTag": "7e30ab7e-0d07-4fd7-9d03-0c8ac68304d0",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1890.0680107505029,
+            "y": 254.01297317627592
+          },
+          "nodeIndex": "SIM Segment Results",
+          "nodeLineageTag": "8cc80095-bd32-4551-93c8-0bfb73f11781",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1616.6000678731548,
+            "y": -50
+          },
+          "nodeIndex": "SIM Variant Metrics",
+          "nodeLineageTag": "38cfffc1-50c0-4260-9769-911f346206e0",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

@@ -1,0 +1,6 @@
+scenario,description,identical_arms,true_conversion_effect_abs,true_error_rate_effect_abs,true_cancellation_effect_abs,true_order_value_multiplier,true_checkout_seconds_multiplier,seed,n_users,true_control_conversion
+aa,A/A test - both arms receive the existing checkout,True,0.0,0.0,0.0,1.0,1.0,20260301,21000,0.546
+null_effect,Simplified checkout is faster but does not change purchase completion,False,0.0,0.0,0.0,1.0,0.9,20261301,21000,0.546
+positive,Simplified checkout raises completion by 2.5 pp and reduces errors,False,0.025,-0.01,0.0,1.0,0.85,20262301,21000,0.546
+small_effect,"Real but small 0.8 pp lift, below the planned MDE",False,0.008,0.0,0.0,1.0,0.9,20263301,21000,0.546
+guardrail_harm,"3 pp more purchases, but more cancellations and slightly smaller baskets",False,0.03,0.0,0.015,0.97,0.85,20264301,21000,0.546

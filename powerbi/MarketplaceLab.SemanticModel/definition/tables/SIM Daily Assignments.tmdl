@@ -1,0 +1,52 @@
+/// SIMULATED. New assigned users per day and variant, for allocation-drift checks.
+table 'SIM Daily Assignments'
+	lineageTag: 08a6329b-8fa1-4957-bbc9-09486fcda50b
+
+	/// SIMULATED. Users first assigned on the day.
+	measure 'SIM Daily New Users' = SUM ( 'SIM Daily Assignments'[New Users] )
+		formatString: #,##0
+		displayFolder: SIMULATED Diagnostics
+		lineageTag: 3262f938-bdeb-40f8-bbf9-5cb26d48d604
+
+	/// Foreign key to SIM Scenario.
+	column Scenario
+		dataType: string
+		isHidden
+		lineageTag: b1854cd1-9a13-4fe9-bd33-29fb056f342d
+		sourceColumn: scenario
+
+	/// Synthetic assignment date.
+	column 'Exposure Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 71251feb-cadd-4d97-8a47-ca1bcad79d00
+		summarizeBy: none
+		sourceColumn: exposure_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	/// control or treatment.
+	column Variant
+		dataType: string
+		lineageTag: 07af529a-5c42-4c5f-9a8d-99e03de99a6d
+		sourceColumn: variant
+
+	/// Users first exposed on that day.
+	column 'New Users'
+		dataType: int64
+		isHidden
+		lineageTag: 0ac2ee26-52b8-476c-805e-8cc92a4a3c61
+		summarizeBy: none
+		sourceColumn: new_users
+
+	partition 'SIM Daily Assignments' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\sim_daily_assignments.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"scenario", type text}, {"exposure_date", type date}, {"variant", type text}, {"new_users", Int64.Type}})
+				in
+				    Typed
+

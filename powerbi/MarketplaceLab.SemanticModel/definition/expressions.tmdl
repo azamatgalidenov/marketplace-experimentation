@@ -1,0 +1,6 @@
+/// Folder containing the Parquet files written by `uv run python -m marketplace_analytics export-powerbi`. Change this path when the repository is cloned elsewhere.
+expression DataFolder = "C:\Users\User\python projects\marketplace-experimentation\powerbi\data" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 6120ac53-3c54-43bf-8cd0-a2e4122b505a
+
+	annotation PBI_ResultType = Text
+

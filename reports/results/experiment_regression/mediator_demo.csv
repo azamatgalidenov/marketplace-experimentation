@@ -1,0 +1,5 @@
+quantity,estimate,ci_low,ci_high,replications
+True total effect,0.035,,,200
+True direct effect,0.01,,,200
+Estimate without mediator (correct),0.03544124378357904,0.024223590081458905,0.04492674570876863,200
+Estimate adjusting for errors (biased),0.010386016797022097,-0.0009577256516138525,0.01956907617381519,200

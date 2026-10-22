@@ -1,0 +1,10 @@
+{
+  "interaction_p_values": {
+    "aa": 0.29546675704195596,
+    "null_effect": 0.06821001212711136,
+    "positive": 0.204146793803387,
+    "small_effect": 0.8611746244687071,
+    "guardrail_harm": 0.25730409709876123
+  },
+  "validation_consistent": true
+}

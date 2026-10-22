@@ -1,0 +1,20 @@
+/// Brazilian IBGE macro-region of the customer.
+table 'Customer Region'
+	lineageTag: d1470750-c899-4d53-bfe1-ea1ab925efb1
+
+	/// North, Northeast, Center-West, Southeast or South.
+	column Region
+		dataType: string
+		isKey
+		lineageTag: c7de32ae-1b93-458d-94b3-0f39bfa58272
+		sourceColumn: region
+
+	partition 'Customer Region' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\hist_dim_geography.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"region", type text}})
+				in
+				    Typed
+

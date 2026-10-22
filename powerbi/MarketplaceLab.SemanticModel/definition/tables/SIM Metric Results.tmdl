@@ -1,0 +1,144 @@
+/// SIMULATED. Python-computed inference per scenario and metric (primary, guardrails, descriptive secondary). Rates are proportions; values are synthetic.
+table 'SIM Metric Results'
+	lineageTag: f203ddb3-c578-4e60-a6df-ea7f74db9f51
+
+	/// SIMULATED. Newcombe 95% CI and pooled z-test p-value for the primary metric, from the Python analysis.
+	measure 'SIM Lift CI Label' =
+			VAR _lo = CALCULATE ( MAX ( 'SIM Metric Results'[CI Low] ), 'SIM Metric Results'[Metric] = "purchase_completion" )
+			VAR _hi = CALCULATE ( MAX ( 'SIM Metric Results'[CI High] ), 'SIM Metric Results'[Metric] = "purchase_completion" )
+			VAR _p = CALCULATE ( MAX ( 'SIM Metric Results'[p-value] ), 'SIM Metric Results'[Metric] = "purchase_completion" )
+			RETURN
+			    IF (
+			        HASONEVALUE ( 'SIM Scenario'[Scenario] ),
+			        "95% CI " & FORMAT ( _lo * 100, "+0.00;-0.00" ) & " to " & FORMAT ( _hi * 100, "+0.00;-0.00" ) & " pp, p = " & FORMAT ( _p, "0.0000" ),
+			        "Select one scenario"
+			    )
+		displayFolder: SIMULATED Primary
+		lineageTag: 81021555-06ad-4302-9f10-bef2f54444e0
+
+	/// SIMULATED. Consistency check: DAX lift computed from user rows vs the Python analysis result.
+	measure 'SIM Lift Check' =
+			VAR _dax = [SIM Absolute Lift (pp)]
+			VAR _python = CALCULATE ( MAX ( 'SIM Metric Results'[Absolute Difference] ), 'SIM Metric Results'[Metric] = "purchase_completion" ) * 100
+			RETURN
+			    IF (
+			        HASONEVALUE ( 'SIM Scenario'[Scenario] ),
+			        IF ( ABS ( _dax - _python ) < 0.000001, "DAX matches Python", "MISMATCH: DAX " & FORMAT ( _dax, "0.0000" ) & " vs Python " & FORMAT ( _python, "0.0000" ) )
+			    )
+		displayFolder: SIMULATED Diagnostics
+		lineageTag: 2287beab-a49b-4ae0-9d13-4b4dd008373c
+
+	/// Foreign key to SIM Scenario.
+	column Scenario
+		dataType: string
+		isHidden
+		lineageTag: 9cbffe72-5639-494c-817b-6a6ec3a876b0
+		sourceColumn: scenario
+
+	/// purchase_completion (primary), guardrails, descriptive secondary metrics.
+	column Metric
+		dataType: string
+		lineageTag: 0e6e9093-9123-454b-82fd-447376c4b532
+		sourceColumn: metric
+		sortByColumn: 'Metric Order'
+
+	/// primary, guardrail or secondary.
+	column Role
+		dataType: string
+		lineageTag: 7e5fe473-a597-494d-a457-4fc325ec4c8d
+		sourceColumn: role
+
+	/// Sort key: primary first, then guardrails.
+	column 'Metric Order'
+		dataType: int64
+		isHidden
+		lineageTag: 66d9cfc3-d7bb-4524-937d-e091a43ef80c
+		summarizeBy: none
+		sourceColumn: metric_order
+
+	/// Control arm value (rate as proportion, or mean).
+	column 'Control Value'
+		dataType: double
+		formatString: #,##0.0000
+		lineageTag: d44c727b-ac39-42c2-a892-4d137328ec57
+		summarizeBy: none
+		sourceColumn: value_control
+
+	/// Treatment arm value.
+	column 'Treatment Value'
+		dataType: double
+		formatString: #,##0.0000
+		lineageTag: 88338466-90cc-406f-9a71-405b33a60368
+		summarizeBy: none
+		sourceColumn: value_treatment
+
+	/// Treatment minus control (proportion points for rates).
+	column 'Absolute Difference'
+		dataType: double
+		formatString: +#,##0.0000;-#,##0.0000
+		lineageTag: 40b597f8-4862-496a-bb66-ba66765d5445
+		summarizeBy: none
+		sourceColumn: abs_diff
+
+	/// Lower 95% bound of the absolute difference (Newcombe for rates, Welch for means).
+	column 'CI Low'
+		dataType: double
+		formatString: +#,##0.0000;-#,##0.0000
+		lineageTag: c495104a-cce3-4041-b995-87c12c898af3
+		summarizeBy: none
+		sourceColumn: abs_ci_low
+
+	/// Upper 95% bound of the absolute difference.
+	column 'CI High'
+		dataType: double
+		formatString: +#,##0.0000;-#,##0.0000
+		lineageTag: e02fc827-f16f-49f6-bcae-e810ccd4f4cb
+		summarizeBy: none
+		sourceColumn: abs_ci_high
+
+	/// Relative lift (treatment / control - 1).
+	column 'Relative Difference'
+		dataType: double
+		formatString: +0.0%;-0.0%
+		lineageTag: ec55b01f-2882-48e9-ba53-f29aa719fb06
+		summarizeBy: none
+		sourceColumn: rel_diff
+
+	/// Two-sided p-value (pooled z-test or Welch t-test).
+	column p-value
+		dataType: double
+		formatString: 0.0000
+		lineageTag: 3fe8db45-c21a-47fc-a218-caff3bb61833
+		summarizeBy: none
+		sourceColumn: p_value
+
+	/// Pre-registered guardrail margin (see Margin Scale).
+	column Margin
+		dataType: double
+		formatString: 0.000
+		lineageTag: 43f574cf-c769-45e7-a3f1-a2ff47ff1106
+		summarizeBy: none
+		sourceColumn: margin
+
+	/// absolute or relative.
+	column 'Margin Scale'
+		dataType: string
+		lineageTag: 889111a5-07b5-4b1f-9207-6b4bc115dc67
+		sourceColumn: margin_scale
+
+	/// green (harm beyond margin ruled out), amber (cannot rule out), red (significant harm); primary/descriptive for other rows.
+	column 'Guardrail Status'
+		dataType: string
+		lineageTag: 2f1a5524-6c20-4aba-85cd-30e3c08affba
+		sourceColumn: guardrail_status
+
+	partition 'SIM Metric Results' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\sim_metric_results.parquet")),
+				    Selected = Table.SelectColumns(Source, {"scenario", "metric", "role", "metric_order", "value_control", "value_treatment", "abs_diff", "abs_ci_low", "abs_ci_high", "rel_diff", "p_value", "margin", "margin_scale", "guardrail_status"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"scenario", type text}, {"metric", type text}, {"role", type text}, {"metric_order", Int64.Type}, {"value_control", type number}, {"value_treatment", type number}, {"abs_diff", type number}, {"abs_ci_low", type number}, {"abs_ci_high", type number}, {"rel_diff", type number}, {"p_value", type number}, {"margin", type number}, {"margin_scale", type text}, {"guardrail_status", type text}})
+				in
+				    Typed
+

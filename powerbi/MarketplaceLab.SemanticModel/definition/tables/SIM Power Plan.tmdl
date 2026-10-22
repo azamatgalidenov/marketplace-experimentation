@@ -1,0 +1,44 @@
+/// SIMULATED design-stage power plan (single row). Utility table without relationships.
+table 'SIM Power Plan'
+	lineageTag: 6a50dc6a-9eee-4dbf-9dcd-a14533447ac8
+
+	/// SIMULATED. Minimum detectable effect (80% power, alpha 0.05) at the planned sample, percentage points.
+	measure 'SIM Achieved MDE (pp)' = MAX ( 'SIM Power Plan'[Achieved MDE] ) * 100
+		formatString: 0.00 pp
+		displayFolder: SIMULATED Diagnostics
+		lineageTag: ed530cb0-b757-4ea6-bb15-723786a00e6a
+
+	/// Smallest absolute lift detectable with 80% power at the planned sample.
+	column 'Achieved MDE'
+		dataType: double
+		isHidden
+		lineageTag: 28a6d993-7e97-4af5-942e-48b68de5820b
+		summarizeBy: none
+		sourceColumn: achieved_mde_abs
+
+	/// Planned users per arm.
+	column 'Planned Users per Arm'
+		dataType: double
+		isHidden
+		lineageTag: 388fe2cd-299a-46ce-9d79-2855700f9e7c
+		summarizeBy: none
+		sourceColumn: planned_n_per_arm
+
+	/// Smallest lift worth launching (absolute).
+	column 'Practical Threshold'
+		dataType: double
+		isHidden
+		lineageTag: 7c62a7a0-baf0-42d7-9801-76d593eb0411
+		summarizeBy: none
+		sourceColumn: practical_threshold_abs
+
+	partition 'SIM Power Plan' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\sim_power_plan.parquet")),
+				    Selected = Table.SelectColumns(Source, {"achieved_mde_abs", "planned_n_per_arm", "practical_threshold_abs"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"achieved_mde_abs", type number}, {"planned_n_per_arm", type number}, {"practical_threshold_abs", type number}})
+				in
+				    Typed
+

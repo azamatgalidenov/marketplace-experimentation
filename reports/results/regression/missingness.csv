@@ -1,0 +1,12 @@
+field,missing,rows
+review_score,0,95557
+review_survey_sent_date,0,95557
+review_answered_at,0,95557
+delivered_to_customer_at,0,95557
+estimated_delivery_date,0,95557
+items_value,0,95557
+freight_value,0,95557
+primary_category,0,95557
+customer_region,0,95557
+primary_seller_id,0,95557
+primary_category == 'unknown' (product without category),1347,95557

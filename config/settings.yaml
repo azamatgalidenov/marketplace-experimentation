@@ -1,0 +1,114 @@
+# Central configuration for the pipeline.
+# Paths are relative to the repository root.
+
+paths:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  warehouse: data/processed/marketplace.duckdb
+  figures_dir: reports/figures
+  results_dir: reports/results
+  powerbi_export_dir: powerbi/data
+
+olist:
+  # Official Kaggle download endpoint. Anonymous downloads currently work for this public
+  # dataset; if they stop working, follow the manual steps in data/README.md.
+  download_url: https://www.kaggle.com/api/v1/datasets/download/olistbr/brazilian-ecommerce
+  # SHA-256 of the archive downloaded on 2026-10-14. A mismatch is logged as a warning,
+  # not an error, because Kaggle can repackage the archive without changing the data.
+  expected_zip_sha256: 967e41e04fc306fe604e2a693f488995a8b41e5047418f8a5c8e4abd6deca784
+
+  # Complete calendar months used for trend analysis. Months before 2017-01 and after
+  # 2018-08 contain only a handful of orders (data-collection edges), so they are
+  # excluded from time-series charts but kept in the warehouse.
+  analysis_start: "2017-01-01"
+  analysis_end: "2018-08-31"
+
+  # A review score at or below this value counts as a "low review".
+  low_review_max_score: 2
+
+regression:
+  # Observational low-review model. Low review = olist.low_review_max_score.
+  top_categories: 15        # most frequent primary categories kept; the rest pooled as "other"
+  simulation_draws: 1000    # coefficient draws for marginal-effect / prediction intervals
+  seed: 20260214
+
+# ---------------------------------------------------------------------------------------
+# SIMULATED checkout experiment. Everything below is an assumption used to
+# generate synthetic data. None of these numbers describe the real checkout of Olist,
+# Vinted or any other company.
+# ---------------------------------------------------------------------------------------
+experiment:
+  name: simplified_checkout_v1
+  salt: simplified-checkout-v1     # hashing salt for stable user-level assignment
+  seed: 20260301                   # base seed for outcome generation
+  start_date: "2026-01-05"         # synthetic calendar, Monday
+  duration_days: 14                # >= 2 full weekly cycles
+  daily_eligible_users: 1500       # assumed users entering checkout per day
+  treatment_share: 0.5
+
+  # Pre-registered analysis plan (see docs/experiment_plan.md)
+  alpha: 0.05                      # two-sided, primary metric only
+  power: 0.80
+  mde_abs: 0.02                    # minimum detectable effect, absolute (2.0 pp)
+  planning_baseline_conversion: 0.55  # pre-experiment rate assumed for power planning
+  practical_threshold_abs: 0.01    # smallest lift worth launching (1.0 pp)
+  srm_alpha: 0.001                 # sample-ratio-mismatch alarm threshold
+  segment_min_users_per_arm: 1000  # below this a segment result is flagged small-sample
+  guardrail_margins:               # largest tolerated deterioration
+    revenue_per_user_rel: 0.02     # gross order value per assigned user: <= 2% relative drop
+    checkout_error_rate_abs: 0.005 # <= +0.5 pp users with a checkout error
+    cancellation_rate_abs: 0.005   # <= +0.5 pp users with a cancelled order
+
+  # Assumed population (pre-treatment attributes)
+  device_shares: {mobile_app: 0.50, mobile_web: 0.30, desktop: 0.20}
+  new_customer_share: 0.40
+  exposures_per_user: {1: 0.60, 2: 0.25, 3: 0.15}   # checkout visits during the test
+
+  # Assumed control-arm behaviour
+  baseline_conversion:             # P(purchase within 7 days of first checkout visit)
+    mobile_app: {returning: 0.64, new: 0.52}
+    mobile_web: {returning: 0.50, new: 0.38}
+    desktop:    {returning: 0.62, new: 0.50}
+  baseline_error_rate: {mobile_app: 0.04, mobile_web: 0.09, desktop: 0.05}
+  baseline_cancellation_rate: 0.03 # among purchasers
+  # Order value: log-normal with median 105 and mean ~160 (shape borrowed from the
+  # Olist delivered-order distribution: median R$105, mean R$160; units are generic).
+  order_value_median: 105
+  order_value_sigma: 0.915
+  checkout_seconds_median: {mobile_app: 150, mobile_web: 210, desktop: 170}
+  checkout_seconds_sigma: 0.5
+
+  # Scenarios: effects are applied to the treatment arm only. Absolute effects are in
+  # proportion points; *_multiplier effects scale the control value.
+  scenarios:
+    aa:
+      description: A/A test - both arms receive the existing checkout
+      identical_arms: true
+    null_effect:
+      description: Simplified checkout is faster but does not change purchase completion
+      conversion_abs: 0.0
+      checkout_seconds_multiplier: 0.90
+    positive:
+      description: Simplified checkout raises completion by 2.5 pp and reduces errors
+      conversion_abs: 0.025
+      error_rate_abs: -0.01
+      checkout_seconds_multiplier: 0.85
+    small_effect:
+      description: Real but small 0.8 pp lift, below the planned MDE
+      conversion_abs: 0.008
+      checkout_seconds_multiplier: 0.90
+    guardrail_harm:
+      description: 3 pp more purchases, but more cancellations and slightly smaller baskets
+      conversion_abs: 0.03
+      cancellation_abs: 0.015
+      order_value_multiplier: 0.97
+      checkout_seconds_multiplier: 0.85
+
+  regression:                      # secondary analysis
+    simulation_draws: 1000         # coefficient draws for AME / prediction intervals
+    validation_replications: 200   # repeated simulations of the adjusted estimator
+    seed: 20260315
+
+  validation:
+    replications: 500              # repeated simulations per validation scenario
+    srm_logging_losses: [0.01, 0.03, 0.05, 0.10]  # treatment users dropped to test SRM detection

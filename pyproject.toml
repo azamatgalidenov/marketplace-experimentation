@@ -1,0 +1,40 @@
+[project]
+name = "marketplace-analytics"
+version = "0.1.0"
+description = "Marketplace checkout analytics on real Olist data plus a clearly separated, simulated checkout A/B experiment."
+requires-python = ">=3.12"
+dependencies = [
+    "duckdb>=1.5.6",
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.4",
+    "pandas>=3.0.6",
+    "pyyaml>=6.0.3",
+    "scipy>=1.18.1",
+    "statsmodels>=0.15.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.17.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [".claude"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "PD", "NPY"]
+
+[tool.ruff.lint.per-file-ignores]
+# Declarative page/visual layout tables read best as one visual per entry.
+"src/marketplace_analytics/reporting/powerbi_report.py" = ["E501"]

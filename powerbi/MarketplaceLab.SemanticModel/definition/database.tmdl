@@ -1,0 +1,4 @@
+/// Marketplace Checkout & Experimentation Lab: real Olist history (Orders, Order Items, Payments, Date, Customer Region, Product Category) and a SIMULATED checkout A/B test (all SIM tables). The two parts share no relationships.
+database
+	compatibilityLevel: 1702
+

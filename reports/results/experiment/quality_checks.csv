@@ -1,0 +1,6 @@
+name,description,severity,failing_rows
+sim_assignment_coverage,"Assignments, user attributes and outcomes cover exactly the same SIMULATED users.",error,0
+sim_denominator_consistency,SIMULATED variant summaries use the assigned-user denominator and reconcile with the user-level table.,error,0
+sim_single_variant,"Every SIMULATED user is exposed to exactly one variant (stable assignment, no cross-over).",error,0
+sim_unique_grain,SIMULATED experiment tables are unique at their grain (no duplicate users or outcomes).,error,0
+sim_valid_outcomes,"SIMULATED outcomes are internally consistent (purchase-only fields present iff purchased, positive values).",error,0

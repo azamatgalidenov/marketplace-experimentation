@@ -1,0 +1,20 @@
+/// English product category (Portuguese name when untranslated; 'unknown' when missing). For Orders it means the primary (most expensive item) category; for Order Items the item's own category.
+table 'Product Category'
+	lineageTag: adb527ca-867b-49e8-a9ac-60c3f4174a9b
+
+	/// Product category name.
+	column Category
+		dataType: string
+		isKey
+		lineageTag: 57b40814-999c-4627-956c-7ac8937bd430
+		sourceColumn: category_name
+
+	partition 'Product Category' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\hist_dim_category.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"category_name", type text}})
+				in
+				    Typed
+

@@ -1,0 +1,259 @@
+/// REAL Olist data. One row per order (all statuses). Gross customer payments, not platform revenue. Lateness = delivery date after promised date; low review = latest review score 1-2.
+table Orders
+	lineageTag: c07701ca-8746-4b41-9f70-be6b9b24ddbd
+
+	/// Number of orders, all statuses.
+	measure Orders = COUNTROWS ( 'Orders' )
+		formatString: #,##0
+		displayFolder: Volume
+		lineageTag: 9d709c7f-f308-47b0-9b15-c7731b395ef3
+
+	/// Orders with status delivered.
+	measure 'Delivered Orders' = CALCULATE ( [Orders], KEEPFILTERS ( 'Orders'[Order Status] = "delivered" ) )
+		formatString: #,##0
+		displayFolder: Volume
+		lineageTag: 59c3fa49-a5b5-4dd9-909e-176db3af337a
+
+	/// Delivered orders / all orders.
+	measure 'Delivered Share' = DIVIDE ( [Delivered Orders], [Orders] )
+		formatString: 0.0%
+		displayFolder: Volume
+		lineageTag: c9d6f99f-e75f-4931-ba4f-1c1e6b840dd7
+
+	/// Orders in the current status / orders across all statuses (same other filters).
+	measure 'Order Share' = DIVIDE ( [Orders], CALCULATE ( [Orders], REMOVEFILTERS ( 'Orders'[Order Status] ) ) )
+		formatString: 0.0%
+		displayFolder: Volume
+		lineageTag: ddc9d52d-040d-4f84-a004-712a3bfad210
+
+	/// Gross merchandise value: sum of item prices of delivered orders (BRL). Customer payments, not platform revenue.
+	measure 'Delivered GMV' = CALCULATE ( SUM ( 'Orders'[Items Value] ), KEEPFILTERS ( 'Orders'[Order Status] = "delivered" ) )
+		formatString: R$ #,##0
+		displayFolder: Value
+		lineageTag: 60fa7535-9501-44d1-b1db-4a7ce9666642
+
+	/// Items + freight of delivered orders (BRL). Customer payments, not platform revenue.
+	measure 'Delivered Gross Order Value' = CALCULATE ( SUM ( 'Orders'[Order Gross Value] ), KEEPFILTERS ( 'Orders'[Order Status] = "delivered" ) )
+		formatString: R$ #,##0
+		displayFolder: Value
+		lineageTag: f84de95d-44a2-4b4a-92ef-b657154f97bc
+
+	/// Average order value: delivered gross order value / delivered orders.
+	measure 'AOV (Delivered, Gross)' = DIVIDE ( [Delivered Gross Order Value], [Delivered Orders] )
+		formatString: R$ #,##0.00
+		displayFolder: Value
+		lineageTag: 4d5631a7-d181-493a-91e2-346b5bb5dce8
+
+	/// Median gross value of delivered orders; compare with AOV to see skew.
+	measure 'Median Delivered Order Value' = CALCULATE ( MEDIAN ( 'Orders'[Order Gross Value] ), KEEPFILTERS ( 'Orders'[Order Status] = "delivered" ) )
+		formatString: R$ #,##0.00
+		displayFolder: Value
+		lineageTag: 431938aa-ea6f-49d5-9e90-f482115114cd
+
+	/// Delivered orders with a customer-delivery timestamp (denominator for delivery metrics).
+	measure 'Measurable Deliveries' = CALCULATE ( [Orders], KEEPFILTERS ( 'Orders'[Is Delivery Measurable] = TRUE () ) )
+		formatString: #,##0
+		displayFolder: Delivery
+		lineageTag: a4096e9f-65fd-4b77-b3d8-27f496e01bd2
+
+	/// Measurable deliveries that arrived after the promised date (date level).
+	measure 'Late Deliveries' = CALCULATE ( [Orders], KEEPFILTERS ( 'Orders'[Is Delivery Measurable] = TRUE () ), KEEPFILTERS ( 'Orders'[Is Late] = TRUE () ) )
+		formatString: #,##0
+		displayFolder: Delivery
+		lineageTag: ec739e04-3a85-48c7-b588-338fd85d5d1e
+
+	/// Late deliveries / measurable deliveries. Undelivered orders are outside this population.
+	measure 'Late Delivery Rate' = DIVIDE ( [Late Deliveries], [Measurable Deliveries] )
+		formatString: 0.0%
+		displayFolder: Delivery
+		lineageTag: 67224508-4ee6-4ec1-aa34-0a8357ad9099
+
+	/// Median days from purchase to customer delivery, measurable deliveries.
+	measure 'Median Delivery Days' = CALCULATE ( MEDIAN ( 'Orders'[Delivery Days] ), KEEPFILTERS ( 'Orders'[Is Delivery Measurable] = TRUE () ) )
+		formatString: 0.0
+		displayFolder: Delivery
+		lineageTag: 9b1a08f2-2e00-4aaa-8e4e-aa8e8e77f5f2
+
+	/// Orders with a review (latest review per order).
+	measure 'Reviewed Orders' = CALCULATE ( [Orders], KEEPFILTERS ( NOT ISBLANK ( 'Orders'[Review Score] ) ) )
+		formatString: #,##0
+		displayFolder: Reviews
+		lineageTag: 8a3d335d-2927-4c48-883e-232cb7591f53
+
+	/// Reviewed orders whose latest score is 1 or 2.
+	measure 'Low Reviews' = CALCULATE ( [Orders], KEEPFILTERS ( 'Orders'[Is Low Review] = TRUE () ) )
+		formatString: #,##0
+		displayFolder: Reviews
+		lineageTag: 5a979999-3181-4560-b1ba-ee741c14c395
+
+	/// Low reviews / reviewed orders. Includes surveys sent before delivery unless filtered by Survey Timing.
+	measure 'Low Review Rate' = DIVIDE ( [Low Reviews], [Reviewed Orders] )
+		formatString: 0.0%
+		displayFolder: Reviews
+		lineageTag: d030db82-0c2e-4c1a-9005-8de5511855c2
+
+	/// Reviewed orders with the current score / all reviewed orders.
+	measure 'Review Score Share' = DIVIDE ( [Reviewed Orders], CALCULATE ( [Reviewed Orders], REMOVEFILTERS ( 'Orders'[Review Score] ) ) )
+		formatString: 0.0%
+		displayFolder: Reviews
+		lineageTag: 23da5aa6-8aa0-47c0-b33b-8c7d56ffef63
+
+	/// Low-review rate of late orders whose satisfaction survey was sent after the delivery date (excludes the survey-timing artefact).
+	measure 'Low Review Rate Late (Post-delivery Survey)' = CALCULATE ( [Low Review Rate], KEEPFILTERS ( 'Orders'[Survey Timing] = "Sent after delivery" ), KEEPFILTERS ( 'Orders'[Is Delivery Measurable] = TRUE () ), KEEPFILTERS ( 'Orders'[Is Late] = TRUE () ) )
+		formatString: 0.0%
+		displayFolder: Reviews
+		lineageTag: cb5db662-0e01-4f46-b81d-b2f208197ad5
+
+	/// Low-review rate of on-time orders whose survey was sent after the delivery date.
+	measure 'Low Review Rate On-time (Post-delivery Survey)' = CALCULATE ( [Low Review Rate], KEEPFILTERS ( 'Orders'[Survey Timing] = "Sent after delivery" ), KEEPFILTERS ( 'Orders'[Is Delivery Measurable] = TRUE () ), KEEPFILTERS ( 'Orders'[Is Late] = FALSE () ) )
+		formatString: 0.0%
+		displayFolder: Reviews
+		lineageTag: f2684ab9-7d8a-4b76-a022-5a76938338c3
+
+	/// Difference in low-review rate, late minus on-time, among post-delivery surveys, in percentage points. Observational association, not a causal effect.
+	measure 'Low Review Gap Late vs On-time (pp)' = ( [Low Review Rate Late (Post-delivery Survey)] - [Low Review Rate On-time (Post-delivery Survey)] ) * 100
+		formatString: +0.0 pp;-0.0 pp
+		displayFolder: Reviews
+		lineageTag: a7041758-71d2-4d5d-ae87-6cc01e8411cf
+
+	/// Filter-responsive observations computed from the data: peak month, top payment method, mean vs median order value.
+	measure 'Observations Text' =
+			VAR _months = ADDCOLUMNS ( VALUES ( 'Date'[Year Month] ), "@orders", [Orders] )
+			VAR _peak = TOPN ( 1, _months, [@orders], DESC )
+			VAR _peakMonth = MAXX ( _peak, 'Date'[Year Month] )
+			VAR _peakOrders = MAXX ( _peak, [@orders] )
+			VAR _methods = ADDCOLUMNS ( VALUES ( 'Payments'[Payment Type] ), "@share", [Payment Value Share] )
+			VAR _top = TOPN ( 1, _methods, [@share], DESC )
+			VAR _topMethod = MAXX ( _top, 'Payments'[Payment Type] )
+			VAR _topShare = MAXX ( _top, [@share] )
+			VAR _aov = [AOV (Delivered, Gross)]
+			VAR _median = [Median Delivered Order Value]
+			VAR _skew = IF ( _aov > _median, "the mean is above the median, so a minority of large orders lifts the average", "the mean is not above the median" )
+			RETURN
+			    "Busiest month: " & _peakMonth & " (" & FORMAT ( _peakOrders, "#,##0" ) & " orders). "
+			        & "Top payment method: " & _topMethod & " (" & FORMAT ( _topShare, "0%" ) & " of payment value). "
+			        & "Delivered AOV R$ " & FORMAT ( _aov, "#,##0" ) & " vs median R$ " & FORMAT ( _median, "#,##0" ) & ": " & _skew & "."
+		displayFolder: Narrative
+		lineageTag: f943383b-a893-458a-afb8-9efd25c42e1d
+
+	/// Foreign key to Customer Region.
+	column 'Customer Region'
+		dataType: string
+		isHidden
+		lineageTag: 59ab6f3c-b4dc-4c7d-be38-92604de15c96
+		sourceColumn: customer_region
+
+	/// Order status at dataset extraction (snapshot): delivered, shipped, canceled, unavailable, invoiced, processing, created, approved.
+	column 'Order Status'
+		dataType: string
+		lineageTag: 74dde341-de5a-469c-a351-8ba249a09c3f
+		sourceColumn: order_status
+
+	/// Purchase date; foreign key to Date.
+	column 'Order Date'
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: f1b15585-006f-4a85-8e34-8b01584e091b
+		summarizeBy: none
+		sourceColumn: purchase_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	/// English category of the order's most expensive item; foreign key to Product Category.
+	column 'Primary Category'
+		dataType: string
+		isHidden
+		lineageTag: 5b6f184a-b9a6-4cb8-adc0-0e96fe32f47c
+		sourceColumn: primary_category
+
+	/// Sum of item prices (merchandise value), BRL.
+	column 'Items Value'
+		dataType: decimal
+		isHidden
+		lineageTag: 7e5683d7-3867-4282-ae88-74d89663f64e
+		summarizeBy: none
+		sourceColumn: items_value
+
+	/// Sum of freight charged, BRL.
+	column 'Freight Value'
+		dataType: decimal
+		isHidden
+		lineageTag: 40476b0b-48c3-4ef1-abb4-74e2df991cbe
+		summarizeBy: none
+		sourceColumn: freight_value
+
+	/// Items + freight, BRL.
+	column 'Order Gross Value'
+		dataType: decimal
+		isHidden
+		lineageTag: ca23de6b-5bf8-4512-91b0-1a5a063987ea
+		summarizeBy: none
+		sourceColumn: order_gross_value
+
+	/// Status delivered AND a customer-delivery timestamp exists.
+	column 'Is Delivery Measurable'
+		dataType: boolean
+		lineageTag: 6611bc3b-bd0e-45c9-b73c-2f897f58c27e
+		sourceColumn: is_delivery_measurable
+
+	/// Purchase to customer delivery, fractional days.
+	column 'Delivery Days'
+		dataType: decimal
+		isHidden
+		lineageTag: 8cdc2901-b1cc-4d94-9543-2ca0a2682e62
+		summarizeBy: none
+		sourceColumn: delivery_days
+
+	/// Delivered after the promised date (calendar-date comparison).
+	column 'Is Late'
+		dataType: boolean
+		lineageTag: 93ac7270-d953-49df-98c3-ff3897899da1
+		sourceColumn: is_late
+
+	/// Latest review score (1-5); blank if no review.
+	column 'Review Score'
+		dataType: int64
+		lineageTag: aa914e5f-07b5-4c47-a9f3-b8f763db7b02
+		summarizeBy: none
+		sourceColumn: review_score
+
+	/// Latest review score <= 2.
+	column 'Is Low Review'
+		dataType: boolean
+		lineageTag: df7d3825-45f2-4ded-8806-33f0936dc037
+		sourceColumn: is_low_review
+
+	/// Delivery date minus promised date, bucketed (early to late). 'Not measurable' for undelivered orders.
+	column 'Delay Bucket'
+		dataType: string
+		lineageTag: 6f530e9a-9fe8-4d08-8151-3bc034bcd12f
+		sourceColumn: delay_bucket
+		sortByColumn: 'Delay Bucket Order'
+
+	/// Sort key for Delay Bucket.
+	column 'Delay Bucket Order'
+		dataType: int64
+		isHidden
+		lineageTag: 1e9f841a-9ed8-4c08-bb7c-10136a082de1
+		summarizeBy: none
+		sourceColumn: delay_bucket_order
+
+	/// Satisfaction survey SENT date vs delivery date: Sent before delivery / Sent on delivery day / Sent after delivery / n/a.
+	column 'Survey Timing'
+		dataType: string
+		lineageTag: 70e26757-cacf-401b-b25b-1d67e20f557a
+		sourceColumn: survey_timing
+
+	partition Orders = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\hist_fct_orders.parquet")),
+				    Selected = Table.SelectColumns(Source, {"customer_region", "order_status", "purchase_date", "primary_category", "items_value", "freight_value", "order_gross_value", "is_delivery_measurable", "delivery_days", "is_late", "review_score", "is_low_review", "delay_bucket", "delay_bucket_order", "survey_timing"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"customer_region", type text}, {"order_status", type text}, {"purchase_date", type date}, {"primary_category", type text}, {"items_value", Currency.Type}, {"freight_value", Currency.Type}, {"order_gross_value", Currency.Type}, {"is_delivery_measurable", type logical}, {"delivery_days", Currency.Type}, {"is_late", type logical}, {"review_score", Int64.Type}, {"is_low_review", type logical}, {"delay_bucket", type text}, {"delay_bucket_order", Int64.Type}, {"survey_timing", type text}})
+				in
+				    Typed
+

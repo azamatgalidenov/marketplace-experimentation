@@ -1,0 +1,14 @@
+coverage,order_status,orders,payment_value
+items and payments,delivered,96477,15422461.77
+items and payments,shipped,1106,177136.23
+items and payments,canceled,461,105917.73
+items and payments,invoiced,312,68988.76
+items and payments,processing,301,69394.11
+items and payments,unavailable,6,2140.49
+items and payments,approved,2,241.08
+"items, no payments",delivered,1,0.0
+"payments, no items",unavailable,603,124339.02
+"payments, no items",canceled,164,37337.87
+"payments, no items",created,5,688.1
+"payments, no items",invoiced,2,149.23
+"payments, no items",shipped,1,77.73

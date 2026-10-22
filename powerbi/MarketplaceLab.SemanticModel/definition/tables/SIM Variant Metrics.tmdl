@@ -1,0 +1,67 @@
+/// SIMULATED. Per-variant metric values computed in SQL (no inference).
+table 'SIM Variant Metrics'
+	lineageTag: 38cfffc1-50c0-4260-9769-911f346206e0
+
+	/// Foreign key to SIM Scenario.
+	column Scenario
+		dataType: string
+		isHidden
+		lineageTag: 4bf4d9ee-7ee5-4a81-aeb0-f6656e12fa1b
+		sourceColumn: scenario
+
+	/// control or treatment.
+	column Variant
+		dataType: string
+		lineageTag: 36e9ca80-8420-44f0-afd1-65acbabe8246
+		sourceColumn: variant
+
+	/// Denominator for every per-user metric.
+	column 'Assigned Users'
+		dataType: int64
+		formatString: #,##0
+		lineageTag: 8a19a482-ff58-4eba-8aa7-ed59f065c594
+		summarizeBy: none
+		sourceColumn: assigned_users
+
+	/// Purchasers / assigned users.
+	column 'Purchase Completion Rate'
+		dataType: double
+		formatString: 0.00%
+		lineageTag: ac53dded-8b41-41b4-95d8-112d577d0e57
+		summarizeBy: none
+		sourceColumn: purchase_completion_rate
+
+	/// Non-cancelled order value / assigned users (synthetic units).
+	column 'Net Order Value per User'
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 1d39f23a-bd1d-4e19-bc09-f8ff45f88664
+		summarizeBy: none
+		sourceColumn: net_order_value_per_user
+
+	/// Users with a checkout error / assigned users.
+	column 'Checkout Error Rate'
+		dataType: double
+		formatString: 0.00%
+		lineageTag: 0fde9046-6880-4cdc-a2a6-641f98d046c7
+		summarizeBy: none
+		sourceColumn: checkout_error_rate
+
+	/// Users with a cancelled order / assigned users.
+	column 'Cancellation Rate'
+		dataType: double
+		formatString: 0.00%
+		lineageTag: 07f6347e-2edd-48f2-b2eb-75e791fa94b7
+		summarizeBy: none
+		sourceColumn: cancellation_rate
+
+	partition 'SIM Variant Metrics' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\sim_agg_variant_metrics.parquet")),
+				    Selected = Table.SelectColumns(Source, {"scenario", "variant", "assigned_users", "purchase_completion_rate", "net_order_value_per_user", "checkout_error_rate", "cancellation_rate"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"scenario", type text}, {"variant", type text}, {"assigned_users", Int64.Type}, {"purchase_completion_rate", type number}, {"net_order_value_per_user", type number}, {"checkout_error_rate", type number}, {"cancellation_rate", type number}})
+				in
+				    Typed
+

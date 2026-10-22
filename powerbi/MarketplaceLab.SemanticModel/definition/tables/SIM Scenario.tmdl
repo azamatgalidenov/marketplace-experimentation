@@ -1,0 +1,98 @@
+/// SIMULATED. One row per simulated experiment scenario with its pre-registered decision and sample-ratio-mismatch check. Not real business results.
+table 'SIM Scenario'
+	lineageTag: 7e30ab7e-0d07-4fd7-9d03-0c8ac68304d0
+
+	/// SIMULATED. Pre-registered decision for the selected scenario.
+	measure 'SIM Decision' = SELECTEDVALUE ( 'SIM Scenario'[Decision], "Select one scenario" )
+		displayFolder: SIMULATED Decision
+		lineageTag: 4bbdbc69-8eb0-4e6e-ad5d-0d8225a92cbd
+
+	/// SIMULATED. Rule-by-rule reasoning behind the decision.
+	measure 'SIM Decision Reasons' = SELECTEDVALUE ( 'SIM Scenario'[Decision Reasons], "Select one scenario to see the decision reasoning." )
+		displayFolder: SIMULATED Decision
+		lineageTag: 1dc8bae0-00cf-45d0-bff5-144dcd039912
+
+	/// SIMULATED. Sample-ratio-mismatch chi-square p-value (alarm < 0.001).
+	measure 'SIM SRM p-value' = IF ( HASONEVALUE ( 'SIM Scenario'[Scenario] ), MAX ( 'SIM Scenario'[SRM p-value] ) )
+		formatString: 0.0000
+		displayFolder: SIMULATED Diagnostics
+		lineageTag: 99a75cfc-dec3-43d7-9f58-a390fc56c396
+
+	/// SIMULATED. Text status of the SRM check for the selected scenario.
+	measure 'SIM SRM Status' =
+			VAR _p = [SIM SRM p-value]
+			RETURN
+			    IF (
+			        NOT HASONEVALUE ( 'SIM Scenario'[Scenario] ),
+			        "Select one scenario",
+			        IF ( _p < 0.001, "SRM DETECTED: do not interpret (p = " & FORMAT ( _p, "0.0000" ) & ")", "No SRM (p = " & FORMAT ( _p, "0.000" ) & ")" )
+			    )
+		displayFolder: SIMULATED Diagnostics
+		lineageTag: fa74c6bb-b943-466b-ad3a-9aacfd6334b2
+
+	/// SIMULATED scenario: aa, null_effect, positive, small_effect, guardrail_harm.
+	column Scenario
+		dataType: string
+		isKey
+		lineageTag: e5be477b-1665-425d-a6ef-ed46ce480c15
+		sourceColumn: scenario
+		sortByColumn: 'Scenario Order'
+
+	/// What the simulated world assumes (documented in docs/experiment_plan.md).
+	column 'Scenario Description'
+		dataType: string
+		lineageTag: 94302c1d-7e60-4cfb-b9fb-14977020634a
+		sourceColumn: description
+
+	/// Pre-registered decision computed by the analysis: LAUNCH, REJECT, CONTINUE TESTING, INVALID, A/A PASS/FAIL.
+	column Decision
+		dataType: string
+		lineageTag: 7265a0fa-8bf1-43ac-a371-020cf7f6866f
+		sourceColumn: decision
+
+	/// Rule-by-rule reasoning produced by the decision function.
+	column 'Decision Reasons'
+		dataType: string
+		lineageTag: c5633238-ddfe-4778-9a05-0c32e5895eef
+		sourceColumn: decision_reasons
+
+	/// Sort key for Scenario.
+	column 'Scenario Order'
+		dataType: int64
+		isHidden
+		lineageTag: 5ec072d1-31ab-4de4-8721-7e60415d4ab5
+		summarizeBy: none
+		sourceColumn: scenario_order
+
+	/// Chi-square statistic of assigned counts vs the planned 50/50 split.
+	column 'SRM Chi-square'
+		dataType: double
+		formatString: 0.000
+		lineageTag: 895ad4f6-f943-4573-ac14-b995e6289545
+		summarizeBy: none
+		sourceColumn: srm_chi2
+
+	/// p-value of the SRM test; alarm when < 0.001.
+	column 'SRM p-value'
+		dataType: double
+		isHidden
+		formatString: 0.0000
+		lineageTag: f524bb23-2d0d-4ed6-a600-213a88fcaecc
+		summarizeBy: none
+		sourceColumn: srm_p_value
+
+	/// TRUE when the SRM p-value is below 0.001.
+	column 'SRM Detected'
+		dataType: boolean
+		lineageTag: 69c0841b-a1b0-40a1-8cf7-7e1562df28b6
+		sourceColumn: srm_detected
+
+	partition 'SIM Scenario' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\sim_dim_scenario.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"scenario", type text}, {"description", type text}, {"decision", type text}, {"decision_reasons", type text}, {"scenario_order", Int64.Type}, {"srm_chi2", type number}, {"srm_p_value", type number}, {"srm_detected", type logical}})
+				in
+				    Typed
+

@@ -1,0 +1,75 @@
+/// Calendar spanning every purchase date (2016-09-01 to 2018-10-31). The report filters In Analysis Window = TRUE (Jan 2017 - Aug 2018).
+table Date
+	lineageTag: 2e7c178c-d327-4f3d-9151-20741ff76d80
+	dataCategory: Time
+
+	/// Calendar date.
+	column Date
+		dataType: dateTime
+		isUnique
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 450c4396-3194-45eb-bddd-07c7fb997bb4
+		summarizeBy: none
+		sourceColumn: date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Calendar year.
+	column Year
+		dataType: int64
+		lineageTag: b54f904f-214a-4288-b053-287a3d0d75ff
+		summarizeBy: none
+		sourceColumn: year
+
+	/// Calendar quarter (1-4).
+	column Quarter
+		dataType: int64
+		lineageTag: cb3a5085-c5a2-4991-bd49-38da1b987d6f
+		summarizeBy: none
+		sourceColumn: quarter
+
+	/// Month number (1-12).
+	column Month
+		dataType: int64
+		lineageTag: f50e2e78-55c0-4d81-b110-0dac976235e6
+		summarizeBy: none
+		sourceColumn: month
+
+	/// Month label yyyy-mm, sorted chronologically.
+	column 'Year Month'
+		dataType: string
+		lineageTag: c0eb6a78-f502-4c19-ad42-28a2278129e4
+		sourceColumn: year_month
+		sortByColumn: 'Month Start'
+
+	/// First day of the month.
+	column 'Month Start'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 29b41cea-cfd3-403e-b13b-4b4ee1df8b07
+		summarizeBy: none
+		sourceColumn: month_start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	/// TRUE for Jan 2017 - Aug 2018 (complete months).
+	column 'In Analysis Window'
+		dataType: boolean
+		lineageTag: 9907f31a-0b32-4fb8-b733-d6c4f8a94405
+		sourceColumn: in_analysis_window
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "\hist_dim_date.parquet")),
+				    Selected = Table.SelectColumns(Source, {"date", "year", "quarter", "month", "year_month", "month_start", "in_analysis_window"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"date", type date}, {"year", Int64.Type}, {"quarter", Int64.Type}, {"month", Int64.Type}, {"year_month", type text}, {"month_start", type date}, {"in_analysis_window", type logical}})
+				in
+				    Typed
+

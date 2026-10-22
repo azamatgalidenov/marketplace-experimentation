@@ -1,0 +1,9 @@
+scenario,check,replications,observed_rate,ci99_low,ci99_high,expected_rate,consistent
+aa,Adjusted logit: rejection rate,200,0.045,0.01969305689003193,0.09952638283794024,0.05,True
+aa,Adjusted logit: 95% CI coverage,200,0.955,0.9004736171620596,0.9803069431099679,0.95,True
+aa,Adjusted / unadjusted CI width (mean),200,0.9851315017966504,0.982316919482678,0.9883364491719611,,
+aa,Mean adjusted AME minus true effect (bias),200,-0.0004963302750999666,,,0.0,
+positive,Adjusted logit: rejection rate,200,0.94,0.8810325867054564,0.9707112517993616,0.9543266080609798,True
+positive,Adjusted logit: 95% CI coverage,200,0.94,0.8810325867054564,0.9707112517993616,0.95,True
+positive,Adjusted / unadjusted CI width (mean),200,0.9851755396128749,0.9819404590868125,0.9877762751252868,,
+positive,Mean adjusted AME minus true effect (bias),200,-0.00039950215779322617,,,0.0,

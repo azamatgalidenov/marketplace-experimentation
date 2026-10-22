@@ -1,0 +1,5 @@
+is_late,survey_sent_before_delivery,reviewed_orders,low_reviews,mean_score
+False,False,88961,8208,4.292049324985106
+False,True,221,39,3.932126696832579
+True,False,1629,409,3.5260896255371392
+True,True,4749,3572,1.8399663086965676

@@ -1,0 +1,2 @@
+planning_baseline,alpha,power,target_mde_abs,required_n_per_arm_statsmodels,required_n_per_arm_closed_form,planned_users_total,planned_n_per_arm,achieved_mde_abs,duration_days,practical_threshold_abs
+0.55,0.05,0.8,0.02,9669,9669,21000,10500.0,0.019193680888278972,14,0.01
